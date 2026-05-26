@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>预警处理 - 守心智护 机构端</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/common.css">
+<style>
+  :root {
+    --color-primary: #2196F3;
+    --color-primary-light: #64B5F6;
+    --color-primary-dark: #1976D2;
+    --color-primary-bg: #E3F2FD;
+  }
+
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: #FAFAF8;
+    color: #333;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar is unified in common.css */
+
+  /* ===== Main Content ===== */
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    padding: 32px 36px;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    margin-bottom: 28px;
+  }
+
+  .page-header .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+
+  .page-header .header-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 4px;
+  }
+
+  .page-header .meta-item {
+    font-size: 13px;
+    color: #888;
+  }
+
+  .page-header .meta-item span {
+    color: #555;
+    font-weight: 500;
+  }
+
+  /* Filter Tabs */
+  .filter-tabs {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+  }
+
+  .filter-tab {
+    padding: 7px 20px;
+    border-radius: 20px;
+    border: 1px solid #E0E0E0;
+    background: #fff;
+    color: #666;
+    font-size: 13px;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  .filter-tab:hover {
+    border-color: #2196F3;
+    color: #2196F3;
+  }
+
+  .filter-tab.active {
+    background: #2196F3;
+    color: #fff;
+    border-color: #2196F3;
+  }
+
+  /* Section Card */
+  .section-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px 28px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    border: 1px solid #F0F0EC;
+    margin-bottom: 24px;
+  }
+
+  .section-card .section-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #F5F5F3;
+  }
+
+  /* Alert Cards */
+  .alert-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .alert-card {
+    background: #fff;
+    border: 1px solid #F0F0EC;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 20px;
+    transition: box-shadow 0.2s ease;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+
+  .alert-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .alert-card.level-red {
+    border-left: 4px solid #F44336;
+  }
+
+  .alert-card.level-orange {
+    border-left: 4px solid #FF5722;
+  }
+
+  .alert-card.level-yellow {
+    border-left: 4px solid #FF9800;
+  }
+
+  .alert-indicator {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .alert-indicator.red {
+    background: #FFEBEE;
+  }
+
+  .alert-indicator.orange {
+    background: #FBE9E7;
+  }
+
+  .alert-indicator.yellow {
+    background: #FFF3E0;
+  }
+
+  .alert-indicator svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .alert-indicator.red svg { stroke: #F44336; }
+  .alert-indicator.orange svg { stroke: #FF5722; }
+  .alert-indicator.yellow svg { stroke: #FF9800; }
+
+  .alert-body {
+    flex: 1;
+  }
+
+  .alert-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .alert-header .alert-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  .alert-status {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .alert-status.pending {
+    background: #FFEBEE;
+    color: #C62828;
+  }
+
+  .alert-status.following {
+    background: #FFF3E0;
+    color: #E65100;
+  }
+
+  .alert-status.closed {
+    background: #E8F5E9;
+    color: #2E7D32;
+  }
+
+  .alert-type {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .alert-type strong {
+    color: #444;
+  }
+
+  .alert-time {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
+  }
+
+  .alert-evidence {
+    background: #FAFAF8;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  .alert-evidence .evi-label {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .alert-evidence ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .alert-evidence li {
+    font-size: 12px;
+    color: #555;
+    padding: 2px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .alert-evidence li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+
+  .alert-suggestion {
+    background: #E3F2FD;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  .alert-suggestion .sug-label {
+    font-size: 11px;
+    color: #1565C0;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .alert-suggestion .sug-text {
+    font-size: 12px;
+    color: #333;
+  }
+
+  .alert-result {
+    background: #E8F5E9;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  .alert-result .res-label {
+    font-size: 11px;
+    color: #2E7D32;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .alert-result .res-text {
+    font-size: 12px;
+    color: #333;
+  }
+
+  .alert-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-action {
+    padding: 7px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .btn-action.primary {
+    background: #2196F3;
+    color: #fff;
+  }
+
+  .btn-action.primary:hover {
+    background: #1976D2;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.3);
+  }
+
+  .btn-action.secondary {
+    background: #F5F5F5;
+    color: #555;
+  }
+
+  .btn-action.secondary:hover {
+    background: #EEEEEE;
+  }
+
+  .btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: #2196F3;
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: #1976D2;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.3);
+  }
+
+  .btn-outline {
+    background: #fff;
+    color: #666;
+    border: 1px solid #ddd;
+  }
+
+  .btn-outline:hover {
+    border-color: #2196F3;
+    color: #2196F3;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 20px 16px; }
+    .alert-card { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar sidebar--fixed">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      </div>
+      <div class="sidebar-logo-text">
+        <span class="logo-title">守心智护</span>
+        <span class="logo-subtitle">机构管理端</span>
+      </div>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">管理功能</div>
+    <a href="index.html" class="sidebar-link" data-page="risk-overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      风险总览
+    </a>
+    <a href="alerts.html" class="sidebar-link active" data-page="alert-handling">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      预警处理
+    </a>
+    <a href="caregivers.html" class="sidebar-link" data-page="caregiver-mgmt">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      护工管理
+    </a>
+    <a href="training.html" class="sidebar-link" data-page="training">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      培训管理
+    </a>
+    <a href="reports.html" class="sidebar-link" data-page="reports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      数据报表
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="nav-label" style="padding: 0 0 8px;">管理员信息</div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">王</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">王主任</div>
+        <div class="sidebar-user-role">阳光养老院</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+  <div class="page-header">
+    <div class="header-top">
+      <div>
+        <h1>高风险预警处理</h1>
+        <div class="header-meta">
+          <div class="meta-item">机构名称：<span>阳光养老院</span></div>
+          <div class="meta-item">统计日期：<span>2026年5月24日</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" data-filter="all">全部</button>
+      <button class="filter-tab" data-filter="pending">待处理</button>
+      <button class="filter-tab" data-filter="following">跟进中</button>
+      <button class="filter-tab" data-filter="closed">已关闭</button>
+    </div>
+  </div>
+
+  <div class="alert-cards" id="alertCards"></div>
+</main>
+
+<script>
+  const alerts = [
+    {
+      level: 'red',
+      name: '陈美玲',
+      type: '严重疲惫伴崩溃信号',
+      time: '2026-05-24 09:15',
+      status: '待处理',
+      statusClass: 'pending',
+      filterKey: 'pending',
+      evidence: [
+        '连续3天夜间求助',
+        '语音情绪检测到崩溃特征',
+        '交互频率骤增'
+      ],
+      suggestion: '建议暂时调离C区重症老人，安排轮休',
+      buttons: [
+        { label: '确认处理', cls: 'primary', action: "alert('已确认处理，正在分配跟进人员...')" },
+        { label: '转介心理顾问', cls: 'secondary', action: "alert('已转介至心理顾问...')" },
+        { label: '生成排班建议', cls: 'secondary', action: "alert('正在生成排班建议...')" }
+      ]
+    },
+    {
+      level: 'orange',
+      name: '刘桂花',
+      type: '持续高压状态',
+      time: '2026-05-24 08:30',
+      status: '跟进中',
+      statusClass: 'following',
+      filterKey: 'following',
+      evidence: [
+        '7天风险分数持续上升',
+        '照护攻击行为患者频率增加'
+      ],
+      suggestion: '建议减少负责老人数量，增加休息时间',
+      buttons: [
+        { label: '确认处理', cls: 'primary', action: "alert('已确认处理...')" },
+        { label: '查看详情', cls: 'secondary', action: "alert('正在加载详细数据...')" }
+      ]
+    },
+    {
+      level: 'yellow',
+      name: '张秀兰',
+      type: '压力上升趋势',
+      time: '2026-05-23 16:50',
+      status: '已关闭',
+      statusClass: 'closed',
+      filterKey: 'closed',
+      evidence: [
+        '夜间求助增加',
+        '情绪类关键词频率上升'
+      ],
+      result: '已安排家属沟通，增加周末替班',
+      buttons: []
+    }
+  ];
+
+  const warningIcon = `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+
+  function renderAlerts(filter) {
+    const container = document.getElementById('alertCards');
+    const filtered = filter === 'all' ? alerts : alerts.filter(a => a.filterKey === filter);
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;font-size:14px;">暂无此类预警</div>';
+      return;
+    }
+
+    container.innerHTML = filtered.map(a => {
+      let extraBlocks = '';
+      if (a.suggestion) {
+        extraBlocks += `
+          <div class="alert-suggestion">
+            <div class="sug-label">排班建议</div>
+            <div class="sug-text">${a.suggestion}</div>
+          </div>`;
+      }
+      if (a.result) {
+        extraBlocks += `
+          <div class="alert-result">
+            <div class="res-label">处理结果</div>
+            <div class="res-text">${a.result}</div>
+          </div>`;
+      }
+
+      return `
+        <div class="alert-card level-${a.level}">
+          <div class="alert-indicator ${a.level}">${warningIcon}</div>
+          <div class="alert-body">
+            <div class="alert-header">
+              <span class="alert-name">${a.name}</span>
+              <span class="alert-status ${a.statusClass}">${a.status}</span>
+            </div>
+            <div class="alert-type">类型：<strong>${a.type}</strong></div>
+            <div class="alert-time">${a.time}</div>
+            <div class="alert-evidence">
+              <div class="evi-label">风险证据</div>
+              <ul>
+                ${a.evidence.map(e => `<li>${e}</li>`).join('')}
+              </ul>
+            </div>
+            ${extraBlocks}
+            ${a.buttons.length > 0 ? `
+              <div class="alert-actions">
+                ${a.buttons.map(b => `<button class="btn-action ${b.cls}" onclick="${b.action}">${b.label}</button>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Filter tab clicks
+  document.getElementById('filterTabs').addEventListener('click', function(e) {
+    const tab = e.target.closest('.filter-tab');
+    if (!tab) return;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderAlerts(tab.dataset.filter);
+  });
+
+  // Init
+  renderAlerts('all');
+</script>
+
+</body>
+</html>

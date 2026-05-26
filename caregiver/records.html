@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>守心智护 - 照护记录</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/common.css">
+  <style>
+    /* ===== Layout ===== */
+    .app-layout {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar is unified in common.css */
+
+    /* ===== Main Content Area ===== */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--color-bg);
+      overflow-y: auto;
+    }
+
+    /* ===== Page Header ===== */
+    .page-header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 20px 28px;
+      flex-shrink: 0;
+    }
+
+    .page-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .page-title {
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .page-subtitle {
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== Filter Buttons ===== */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      border: 1.5px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .filter-btn.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    .filter-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .filter-dot--yellow { background: #F9A825; }
+    .filter-dot--blue { background: var(--color-info); }
+    .filter-dot--red { background: var(--color-risk-red); }
+    .filter-dot--orange { background: var(--color-risk-orange); }
+    .filter-dot--purple { background: #7B1FA2; }
+
+    /* ===== Records Content ===== */
+    .records-content {
+      padding: 28px;
+      flex: 1;
+    }
+
+    .records-summary {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+    }
+
+    .records-summary strong {
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+
+    .summary-divider {
+      width: 1px;
+      height: 16px;
+      background: var(--color-border);
+    }
+
+    /* ===== Timeline ===== */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .timeline-date-group {
+      margin-bottom: 8px;
+    }
+
+    .timeline-date-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+
+    .timeline-date-label span {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      white-space: nowrap;
+    }
+
+    .timeline-date-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    /* ===== Event Card ===== */
+    .event-card {
+      display: flex;
+      gap: 16px;
+      padding: 16px 20px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 10px;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .event-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .event-time-col {
+      flex-shrink: 0;
+      width: 56px;
+      text-align: center;
+      padding-top: 2px;
+    }
+
+    .event-time-text {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      line-height: 1.2;
+    }
+
+    .event-time-period {
+      font-size: 0.6875rem;
+      color: var(--color-text-tertiary);
+      margin-top: 2px;
+    }
+
+    .event-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .event-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Event type tags */
+    .event-type-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .event-type-tag svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .event-type-tag--refuse-med {
+      background: #FFF8E1;
+      color: #F9A825;
+      border: 1px solid #FFECB3;
+    }
+
+    .event-type-tag--night-walk {
+      background: #E3F2FD;
+      color: #1565C0;
+      border: 1px solid #BBDEFB;
+    }
+
+    .event-type-tag--emotion {
+      background: #FFEBEE;
+      color: #C62828;
+      border: 1px solid #FFCDD2;
+    }
+
+    .event-type-tag--refuse-food {
+      background: #FFF3E0;
+      color: #E65100;
+      border: 1px solid #FFE0B2;
+    }
+
+    .event-type-tag--hallucination {
+      background: #F3E5F5;
+      color: #7B1FA2;
+      border: 1px solid #E1BEE7;
+    }
+
+    /* Severity badge */
+    .severity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+    }
+
+    .severity-badge--low {
+      background: var(--color-risk-green-bg);
+      color: var(--color-risk-green);
+    }
+
+    .severity-badge--medium {
+      background: var(--color-risk-yellow-bg);
+      color: var(--color-risk-yellow);
+    }
+
+    .severity-badge--high {
+      background: var(--color-risk-orange-bg);
+      color: var(--color-risk-orange);
+    }
+
+    /* Status tag */
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      margin-left: auto;
+    }
+
+    .status-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .status-tag--processed {
+      background: var(--color-risk-green-bg);
+      color: var(--color-risk-green);
+    }
+    .status-tag--processed::before { background: var(--color-risk-green); }
+
+    .status-tag--recorded {
+      background: #E3F2FD;
+      color: #1565C0;
+    }
+    .status-tag--recorded::before { background: #1565C0; }
+
+    .status-tag--intervened {
+      background: var(--color-risk-orange-bg);
+      color: var(--color-risk-orange);
+    }
+    .status-tag--intervened::before { background: var(--color-risk-orange); }
+
+    .status-tag--relieved {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+    .status-tag--relieved::before { background: #2E7D32; }
+
+    .event-desc {
+      font-size: 0.875rem;
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .event-response {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+      background: rgba(0,0,0,0.02);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .event-response svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--color-primary);
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .records-content { padding: 16px; }
+      .page-header { padding: 16px 20px; }
+      .event-card { flex-direction: column; gap: 8px; }
+      .event-time-col { width: auto; text-align: left; display: flex; align-items: center; gap: 8px; }
+      .event-header { flex-wrap: wrap; }
+      .status-tag { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- ===== Left Sidebar ===== -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          </div>
+          <div class="sidebar-logo-text">
+            <span class="logo-title">守心智护</span>
+            <span class="logo-subtitle">照护者端</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">功能导航</div>
+        <a href="index.html" class="sidebar-link">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+          对话问答
+        </a>
+        <a href="records.html" class="sidebar-link active">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+          照护记录
+        </a>
+        <a href="profile.html" class="sidebar-link">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+          风险档案
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="nav-label" style="padding: 0 0 8px;">照护者信息</div>
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">张</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">张秀兰</div>
+            <div class="sidebar-user-role">62岁 / 配偶</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== Main Content ===== -->
+    <main class="main-content">
+      <div class="page-header">
+        <div class="page-header-top">
+          <div>
+            <h1 class="page-title">照护记录</h1>
+          </div>
+          <div class="page-subtitle">照护对象：<strong>李建国</strong> | 阿尔茨海默病中期</div>
+        </div>
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-btn active" data-filter="all">全部</button>
+          <button class="filter-btn" data-filter="refuse-med">
+            <span class="filter-dot filter-dot--yellow"></span>拒药
+          </button>
+          <button class="filter-btn" data-filter="night-walk">
+            <span class="filter-dot filter-dot--blue"></span>夜间游走
+          </button>
+          <button class="filter-btn" data-filter="emotion">
+            <span class="filter-dot filter-dot--red"></span>情绪事件
+          </button>
+          <button class="filter-btn" data-filter="refuse-food">
+            <span class="filter-dot filter-dot--orange"></span>拒食
+          </button>
+          <button class="filter-btn" data-filter="hallucination">
+            <span class="filter-dot filter-dot--purple"></span>幻觉妄想
+          </button>
+        </div>
+      </div>
+
+      <div class="records-content">
+        <div class="records-summary" id="recordsSummary"></div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // ===== Mock Data =====
+    const events = [
+      {
+        date: '05-24',
+        time: '08:15',
+        type: 'refuse-med',
+        typeName: '拒药',
+        severity: 'medium',
+        severityLabel: '中等',
+        desc: '老人拒绝服用多奈哌齐，将药片扔到地上',
+        response: '已引导照护者尝试碾碎药物拌入食物，并建议下次复诊时讨论调整剂型',
+        status: 'processed',
+        statusLabel: '已处理'
+      },
+      {
+        date: '05-24',
+        time: '02:30',
+        type: 'night-walk',
+        typeName: '夜间游走',
+        severity: 'medium',
+        severityLabel: '中等',
+        desc: '老人夜间起床在客厅游走，开灯多盏',
+        response: '已记录夜间游走行为，建议安装小夜灯并温和引导回床',
+        status: 'recorded',
+        statusLabel: '已记录'
+      },
+      {
+        date: '05-23',
+        time: '16:45',
+        type: 'emotion',
+        typeName: '情绪崩溃',
+        severity: 'high',
+        severityLabel: '高危',
+        desc: '照护者表达强烈疲惫和无助感',
+        response: '已紧急介入，提供心理援助热线400-161-9995，建议联系社区喘息服务',
+        status: 'intervened',
+        statusLabel: '已介入'
+      },
+      {
+        date: '05-23',
+        time: '12:00',
+        type: 'refuse-food',
+        typeName: '拒食',
+        severity: 'low',
+        severityLabel: '低',
+        desc: '午餐时拒绝进食，经引导后少量进食',
+        response: '经耐心引导后老人少量进食，建议关注近期食欲变化',
+        status: 'relieved',
+        statusLabel: '已缓解'
+      },
+      {
+        date: '05-22',
+        time: '22:10',
+        type: 'night-walk',
+        typeName: '夜间游走',
+        severity: 'medium',
+        severityLabel: '中等',
+        desc: '夜间游走约20分钟',
+        response: '已记录，游走时间较前次缩短，持续观察中',
+        status: 'recorded',
+        statusLabel: '已记录'
+      },
+      {
+        date: '05-22',
+        time: '15:30',
+        type: 'hallucination',
+        typeName: '幻觉妄想',
+        severity: 'high',
+        severityLabel: '高',
+        desc: '老人声称看到房间里有陌生人',
+        response: '已安抚老人情绪并确认环境安全，建议尽快复诊评估是否需要调整用药',
+        status: 'processed',
+        statusLabel: '已处理'
+      },
+      {
+        date: '05-21',
+        time: '09:00',
+        type: 'refuse-med',
+        typeName: '拒药',
+        severity: 'medium',
+        severityLabel: '中等',
+        desc: '早间用药需多次劝说',
+        response: '经多次温和劝说后服药成功，建议优化服药时间和方式',
+        status: 'processed',
+        statusLabel: '已处理'
+      },
+      {
+        date: '05-20',
+        time: '19:30',
+        type: 'refuse-food',
+        typeName: '拒食',
+        severity: 'low',
+        severityLabel: '低',
+        desc: '晚餐进食量明显减少',
+        response: '已记录进食量变化，建议观察是否有其他不适症状',
+        status: 'relieved',
+        statusLabel: '已缓解'
+      }
+    ];
+
+    // ===== Type config =====
+    const typeConfig = {
+      'refuse-med': {
+        tagClass: 'event-type-tag--refuse-med',
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.5 15H8v-3h2.5V9.5h3V12H16v3h-2.5v2.5h-3V15zM19 8v11c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2h1V4h2v2h4V4h2v2h1c1.1 0 2 .9 2 2zm-2 0H7v11h10V8z"/></svg>'
+      },
+      'night-walk': {
+        tagClass: 'event-type-tag--night-walk',
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>'
+      },
+      'emotion': {
+        tagClass: 'event-type-tag--emotion',
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-4-8c.79 0 1.5-.71 1.5-1.5S8.79 9 8 9s-1.5.71-1.5 1.5S7.21 12 8 12zm8 0c.79 0 1.5-.71 1.5-1.5S16.79 9 16 9s-1.5.71-1.5 1.5.71 1.5 1.5 1.5zm-4 5.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>'
+      },
+      'refuse-food': {
+        tagClass: 'event-type-tag--refuse-food',
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/></svg>'
+      },
+      'hallucination': {
+        tagClass: 'event-type-tag--hallucination',
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>'
+      }
+    };
+
+    // ===== Severity config =====
+    const severityConfig = {
+      'low': 'severity-badge--low',
+      'medium': 'severity-badge--medium',
+      'high': 'severity-badge--high'
+    };
+
+    // ===== Status config =====
+    const statusConfig = {
+      'processed': 'status-tag--processed',
+      'recorded': 'status-tag--recorded',
+      'intervened': 'status-tag--intervened',
+      'relieved': 'status-tag--relieved'
+    };
+
+    // ===== Format time display =====
+    function formatTime(time) {
+      const [h, m] = time.split(':');
+      const hour = parseInt(h);
+      return {
+        time: time,
+        period: hour < 6 ? '凌晨' : hour < 12 ? '上午' : hour < 18 ? '下午' : '晚上'
+      };
+    }
+
+    // ===== Date label mapping =====
+    const dateLabels = {
+      '05-24': '5月24日 (今天)',
+      '05-23': '5月23日 (昨天)',
+      '05-22': '5月22日',
+      '05-21': '5月21日',
+      '05-20': '5月20日'
+    };
+
+    // ===== Render timeline =====
+    let currentFilter = 'all';
+
+    function renderTimeline() {
+      const filtered = currentFilter === 'all'
+        ? events
+        : events.filter(e => e.type === currentFilter);
+
+      // Summary
+      const summaryEl = document.getElementById('recordsSummary');
+      summaryEl.innerHTML = `
+        <span>共 <strong>${filtered.length}</strong> 条记录</span>
+        <span class="summary-divider"></span>
+        <span>高危 <strong>${filtered.filter(e => e.severity === 'high').length}</strong></span>
+        <span class="summary-divider"></span>
+        <span>中等 <strong>${filtered.filter(e => e.severity === 'medium').length}</strong></span>
+        <span class="summary-divider"></span>
+        <span>低 <strong>${filtered.filter(e => e.severity === 'low').length}</strong></span>
+      `;
+
+      // Group by date
+      const grouped = {};
+      filtered.forEach(e => {
+        if (!grouped[e.date]) grouped[e.date] = [];
+        grouped[e.date].push(e);
+      });
+
+      const timelineEl = document.getElementById('timeline');
+      timelineEl.innerHTML = '';
+
+      Object.keys(grouped).sort((a, b) => b.localeCompare(a)).forEach(date => {
+        const group = document.createElement('div');
+        group.className = 'timeline-date-group';
+
+        const label = document.createElement('div');
+        label.className = 'timeline-date-label';
+        label.innerHTML = `<span>${dateLabels[date] || date}</span>`;
+        group.appendChild(label);
+
+        grouped[date].forEach(e => {
+          const timeInfo = formatTime(e.time);
+          const tc = typeConfig[e.type];
+
+          const card = document.createElement('div');
+          card.className = 'event-card';
+          card.dataset.type = e.type;
+
+          card.innerHTML = `
+            <div class="event-time-col">
+              <div class="event-time-text">${timeInfo.time}</div>
+              <div class="event-time-period">${timeInfo.period}</div>
+            </div>
+            <div class="event-body">
+              <div class="event-header">
+                <span class="event-type-tag ${tc.tagClass}">${tc.icon}${e.typeName}</span>
+                <span class="severity-badge ${severityConfig[e.severity]}">${e.severityLabel}</span>
+                <span class="status-tag ${statusConfig[e.status]}">${e.statusLabel}</span>
+              </div>
+              <div class="event-desc">${e.desc}</div>
+              <div class="event-response">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <span>${e.response}</span>
+              </div>
+            </div>
+          `;
+
+          group.appendChild(card);
+        });
+
+        timelineEl.appendChild(group);
+      });
+    }
+
+    // ===== Filter buttons =====
+    document.getElementById('filterBar').addEventListener('click', function(e) {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      currentFilter = btn.dataset.filter;
+      renderTimeline();
+    });
+
+    // ===== Initial render =====
+    renderTimeline();
+  </script>
+</body>
+</html>

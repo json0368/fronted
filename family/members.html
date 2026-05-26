@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭成员 - 守心智护 家庭端</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../styles/common.css" rel="stylesheet">
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --color-bg: #FAFAF8;
+            --color-white: #FFFFFF;
+            --color-primary: #2A9D8F;
+            --color-primary-light: #E8F5F3;
+            --color-primary-bg: #E8F5F3;
+            --color-primary-dark: #1F7A6E;
+            --color-text: #2D3436;
+            --color-text-secondary: #636E72;
+            --color-text-light: #B2BEC3;
+            --color-border: #E8E8E4;
+            --color-border-light: #F0F0EC;
+            --color-risk-green: #27AE60;
+            --color-risk-yellow: #F2C94C;
+            --color-risk-orange: #E76F51;
+            --color-risk-red: #E63946;
+            --color-risk-green-bg: #EAFAF1;
+            --color-risk-yellow-bg: #FEF9E7;
+            --color-risk-orange-bg: #FDEDEC;
+            --color-risk-red-bg: #FDEDEC;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --sidebar-width: 240px;
+            --header-height: 0px;
+        }
+
+        /* ===== Reset ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 14px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ===== Layout ===== */
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar is unified in common.css */
+
+        /* ===== Main Content ===== */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 32px 40px;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* ===== Page Header ===== */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .page-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .page-meta {
+            display: flex;
+            gap: 24px;
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+
+        .page-meta .meta-label {
+            color: var(--color-text-light);
+        }
+
+        .page-meta .meta-value {
+            font-weight: 500;
+        }
+
+        /* ===== Section Title ===== */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* ===== Card ===== */
+        .card {
+            background-color: var(--color-white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border-light);
+            transition: box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* ===== Button ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-white);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--color-primary);
+            border: 1.5px solid var(--color-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--color-primary-light);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--color-text-secondary);
+            border: 1.5px solid var(--color-border);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(0, 0, 0, 0.03);
+            border-color: var(--color-text-light);
+        }
+
+        .btn-sm {
+            padding: 7px 14px;
+            font-size: 0.8rem;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ===== Member Cards Grid ===== */
+        .member-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .member-card {
+            background-color: var(--color-white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border-light);
+            padding: 24px;
+            transition: box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        .member-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .member-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background-color: var(--color-primary-light);
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .member-name-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 2px;
+        }
+
+        .member-relation {
+            font-size: 0.8rem;
+            color: var(--color-text-light);
+            font-weight: 400;
+        }
+
+        .member-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .member-detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .member-detail-label {
+            font-size: 0.8rem;
+            color: var(--color-text-light);
+        }
+
+        .member-detail-value {
+            font-size: 0.85rem;
+            color: var(--color-text);
+            font-weight: 500;
+        }
+
+        .member-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 16px;
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .member-actions .btn {
+            flex: 1;
+        }
+
+        /* ===== Schedule Table ===== */
+        .schedule-section {
+            margin-bottom: 32px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schedule-table thead th {
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--color-text-light);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--color-border-light);
+            letter-spacing: 0.5px;
+        }
+
+        .schedule-table tbody td {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--color-border-light);
+            vertical-align: middle;
+        }
+
+        .schedule-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .schedule-table tbody tr:hover {
+            background-color: rgba(42, 157, 143, 0.03);
+        }
+
+        .schedule-time {
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .schedule-person {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .schedule-person-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-primary);
+            flex-shrink: 0;
+        }
+
+        .schedule-person.secondary {
+            color: var(--color-text-secondary);
+        }
+
+        .schedule-person.secondary .schedule-person-dot {
+            background-color: var(--color-text-light);
+        }
+
+        .schedule-note {
+            font-size: 0.8rem;
+            color: var(--color-text-light);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1200px) {
+            .member-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px 16px;
+            }
+
+            .page-header-top {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar sidebar--fixed">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </div>
+                    <div class="sidebar-logo-text">
+                        <span class="logo-title">守心智护</span>
+                        <span class="logo-subtitle">家庭端</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-label">功能导航</div>
+                <a class="sidebar-link" href="index.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    风险概览
+                </a>
+                <a class="sidebar-link" href="weekly.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    照护周报
+                </a>
+                <a class="sidebar-link" href="events.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    照护事件
+                </a>
+                <a class="sidebar-link active" href="members.html">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    家庭成员
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="nav-label" style="padding: 0 0 8px;">家庭成员</div>
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar">李</div>
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-user-name">李明</div>
+                        <div class="sidebar-user-role">儿子</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-header-top">
+                    <h2 class="page-title">家庭成员</h2>
+                    <button class="btn btn-primary" onclick="addMember()">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        添加成员
+                    </button>
+                </div>
+                <div class="page-meta">
+                    <span>
+                        <span class="meta-label">照护对象:</span>
+                        <span class="meta-value">李建国</span>
+                        <span class="meta-label" style="margin-left: 4px;">|</span>
+                        <span class="meta-label" style="margin-left: 4px;">阿尔茨海默病中期</span>
+                    </span>
+                    <span>
+                        <span class="meta-label">家庭成员:</span>
+                        <span class="meta-value">3人</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Member Cards -->
+            <div class="member-grid" id="memberGrid"></div>
+
+            <!-- Section: Care Schedule -->
+            <div class="schedule-section">
+                <h3 class="section-title">照护分工</h3>
+                <div class="card">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>时段</th>
+                                <th>主要照护者</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ===== Mock Data =====
+
+        var members = [
+            {
+                name: '李明',
+                relation: '儿子',
+                avatar: '明',
+                phone: '139****1234',
+                lastContact: '2026-05-23',
+                weeklyVisits: '1次探望'
+            },
+            {
+                name: '王芳',
+                relation: '女儿',
+                avatar: '芳',
+                phone: '136****5678',
+                lastContact: '2026-05-22',
+                weeklyVisits: '0次探望'
+            }
+        ];
+
+        var scheduleData = [
+            { time: '周一~周五白天', person: '张秀兰', note: '主要照护者', isPrimary: true },
+            { time: '周六白天', person: '李明', note: '周末替换', isPrimary: false },
+            { time: '周日白天', person: '王芳', note: '周末替换', isPrimary: false },
+            { time: '夜间（全部）', person: '张秀兰', note: '含夜间巡视', isPrimary: true }
+        ];
+
+        // ===== Render Functions =====
+
+        function renderMembers() {
+            var grid = document.getElementById('memberGrid');
+            grid.innerHTML = '';
+
+            members.forEach(function(member) {
+                var card = document.createElement('div');
+                card.className = 'member-card';
+
+                // Header
+                var header = document.createElement('div');
+                header.className = 'member-header';
+
+                var avatar = document.createElement('div');
+                avatar.className = 'member-avatar';
+                avatar.textContent = member.avatar;
+
+                var nameInfo = document.createElement('div');
+                nameInfo.className = 'member-name-info';
+
+                var name = document.createElement('div');
+                name.className = 'member-name';
+                name.textContent = member.name;
+
+                var relation = document.createElement('div');
+                relation.className = 'member-relation';
+                relation.textContent = member.relation;
+
+                nameInfo.appendChild(name);
+                nameInfo.appendChild(relation);
+                header.appendChild(avatar);
+                header.appendChild(nameInfo);
+                card.appendChild(header);
+
+                // Details
+                var details = document.createElement('div');
+                details.className = 'member-details';
+
+                var detailItems = [
+                    { label: '联系电话', value: member.phone },
+                    { label: '最近联系', value: member.lastContact },
+                    { label: '本周参与', value: member.weeklyVisits }
+                ];
+
+                detailItems.forEach(function(item) {
+                    var row = document.createElement('div');
+                    row.className = 'member-detail-row';
+
+                    var label = document.createElement('span');
+                    label.className = 'member-detail-label';
+                    label.textContent = item.label;
+
+                    var value = document.createElement('span');
+                    value.className = 'member-detail-value';
+                    value.textContent = item.value;
+
+                    row.appendChild(label);
+                    row.appendChild(value);
+                    details.appendChild(row);
+                });
+
+                card.appendChild(details);
+
+                // Actions
+                var actions = document.createElement('div');
+                actions.className = 'member-actions';
+
+                var sendBtn = document.createElement('button');
+                sendBtn.className = 'btn btn-outline btn-sm';
+                sendBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>发送周报';
+                sendBtn.onclick = function() { sendWeeklyReport(member.name); };
+
+                var contactBtn = document.createElement('button');
+                contactBtn.className = 'btn btn-ghost btn-sm';
+                contactBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>联系';
+                contactBtn.onclick = function() { contactMember(member.name); };
+
+                actions.appendChild(sendBtn);
+                actions.appendChild(contactBtn);
+                card.appendChild(actions);
+
+                grid.appendChild(card);
+            });
+        }
+
+        function renderSchedule() {
+            var tbody = document.getElementById('scheduleBody');
+            tbody.innerHTML = '';
+
+            scheduleData.forEach(function(item) {
+                var tr = document.createElement('tr');
+
+                var tdTime = document.createElement('td');
+                tdTime.className = 'schedule-time';
+                tdTime.textContent = item.time;
+
+                var tdPerson = document.createElement('td');
+                var personSpan = document.createElement('span');
+                personSpan.className = 'schedule-person' + (item.isPrimary ? '' : ' secondary');
+
+                var dot = document.createElement('span');
+                dot.className = 'schedule-person-dot';
+
+                personSpan.appendChild(dot);
+                personSpan.appendChild(document.createTextNode(item.person));
+                tdPerson.appendChild(personSpan);
+
+                var tdNote = document.createElement('td');
+                tdNote.className = 'schedule-note';
+                tdNote.textContent = item.note;
+
+                tr.appendChild(tdTime);
+                tr.appendChild(tdPerson);
+                tr.appendChild(tdNote);
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ===== Interaction Handlers =====
+
+        function addMember() {
+            alert('添加成员功能开发中，敬请期待。');
+        }
+
+        function sendWeeklyReport(name) {
+            alert('已向 ' + name + ' 发送本周照护周报。');
+        }
+
+        function contactMember(name) {
+            alert('正在拨打 ' + name + ' 的电话...');
+        }
+
+        // ===== Initialize =====
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMembers();
+            renderSchedule();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>守心智护 - 照护者端</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/common.css">
+  <style>
+    /* ===== Layout ===== */
+    .app-layout {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar is unified in common.css */
+
+    /* ===== Main Content Area ===== */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--color-bg);
+    }
+
+    /* ===== Chat Header ===== */
+    .chat-header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .chat-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .risk-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: var(--color-risk-yellow-bg);
+      color: var(--color-risk-yellow);
+    }
+
+    .risk-badge-inline::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-risk-yellow);
+    }
+
+    .chat-header-right {
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+    }
+
+    .chat-header-right strong {
+      color: var(--color-text-primary);
+      font-weight: 500;
+    }
+
+    /* ===== Chat Messages ===== */
+    .chat-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-date-divider {
+      text-align: center;
+      padding: 12px 0;
+      position: relative;
+    }
+
+    .chat-date-divider span {
+      background: var(--color-bg);
+      padding: 0 16px;
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      position: relative;
+      z-index: 1;
+    }
+
+    .chat-date-divider::before {
+      content: '';
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      top: 50%;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    .chat-pair {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      animation: fadeSlideUp 0.35s ease-out;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-pair + .chat-pair {
+      margin-top: 16px;
+    }
+
+    /* User message */
+    .msg-user {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .msg-user .msg-bubble {
+      background: var(--color-primary);
+      color: #fff;
+      border-radius: 16px 16px 4px 16px;
+      padding: 12px 16px;
+      max-width: 520px;
+      font-size: 0.875rem;
+      line-height: 1.65;
+      box-shadow: 0 1px 4px rgba(42,157,143,0.18);
+    }
+
+    .msg-user .msg-meta {
+      text-align: right;
+      margin-top: 4px;
+      font-size: 0.6875rem;
+      color: var(--color-text-tertiary);
+    }
+
+    /* AI message */
+    .msg-ai {
+      display: flex;
+      gap: 10px;
+    }
+
+    .msg-ai-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .msg-ai-avatar svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .msg-ai-content {
+      max-width: 560px;
+    }
+
+    .msg-ai .msg-bubble {
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      border-radius: 16px 16px 16px 4px;
+      padding: 14px 18px;
+      font-size: 0.875rem;
+      line-height: 1.75;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-border);
+    }
+
+    .msg-ai .msg-meta {
+      margin-top: 4px;
+      font-size: 0.6875rem;
+      color: var(--color-text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .msg-risk-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 1px 8px;
+      border-radius: 8px;
+    }
+
+    .msg-risk-tag--orange {
+      background: var(--color-risk-orange-bg);
+      color: var(--color-risk-orange);
+    }
+
+    .msg-risk-tag--yellow {
+      background: var(--color-risk-yellow-bg);
+      color: var(--color-risk-yellow);
+    }
+
+    /* ===== Chat Input ===== */
+    .chat-input-area {
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: 16px 24px;
+      flex-shrink: 0;
+    }
+
+    .chat-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--color-bg);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 6px 8px 6px 18px;
+      transition: border-color 0.2s ease;
+    }
+
+    .chat-input-wrap:focus-within {
+      border-color: var(--color-primary);
+    }
+
+    .chat-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.875rem;
+      color: var(--color-text-primary);
+      font-family: inherit;
+      padding: 8px 0;
+      line-height: 1.5;
+    }
+
+    .chat-input::placeholder {
+      color: var(--color-text-tertiary);
+    }
+
+    .input-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .input-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--color-text-tertiary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .input-icon-btn:hover {
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
+    }
+
+    .input-icon-btn.send-btn {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .input-icon-btn.send-btn:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .input-icon-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ===== Right Sidebar (Risk Panel) ===== */
+    .risk-panel {
+      width: 280px;
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      flex-shrink: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .risk-panel-header {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .risk-panel-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 14px;
+    }
+
+    .risk-score-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .risk-score-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 3px solid var(--color-risk-yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .risk-score-circle::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: var(--color-risk-yellow-bg);
+    }
+
+    .risk-score-num {
+      position: relative;
+      z-index: 1;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--color-risk-yellow);
+    }
+
+    .risk-score-info {
+      flex: 1;
+    }
+
+    .risk-level-label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+
+    .risk-level-desc {
+      font-size: 0.6875rem;
+      color: var(--color-text-tertiary);
+      margin-top: 2px;
+    }
+
+    /* Trend section */
+    .risk-section {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .risk-section-title {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 12px;
+    }
+
+    .trend-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 6px;
+      height: 80px;
+      padding-top: 4px;
+    }
+
+    .trend-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .trend-bar {
+      width: 100%;
+      max-width: 24px;
+      border-radius: 3px 3px 0 0;
+      transition: height 0.3s ease;
+    }
+
+    .trend-bar--low { background: var(--color-risk-green); }
+    .trend-bar--medium { background: var(--color-risk-yellow); }
+    .trend-bar--high { background: var(--color-risk-orange); }
+    .trend-bar--critical { background: var(--color-risk-red); }
+
+    .trend-label {
+      font-size: 0.625rem;
+      color: var(--color-text-tertiary);
+      white-space: nowrap;
+    }
+
+    .trend-score-label {
+      font-size: 0.5625rem;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+
+    /* Events list */
+    .events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .event-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .event-item:last-child { border-bottom: none; }
+
+    .event-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    .event-dot--high { background: var(--color-risk-orange); }
+    .event-dot--medium { background: var(--color-risk-yellow); }
+    .event-dot--low { background: var(--color-risk-green); }
+
+    .event-info { flex: 1; min-width: 0; }
+
+    .event-name {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+
+    .event-time {
+      font-size: 0.6875rem;
+      color: var(--color-text-tertiary);
+      margin-top: 1px;
+    }
+
+    .event-level {
+      font-size: 0.625rem;
+      font-weight: 500;
+      padding: 1px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .event-level--high {
+      background: var(--color-risk-orange-bg);
+      color: var(--color-risk-orange);
+    }
+
+    .event-level--medium {
+      background: var(--color-risk-yellow-bg);
+      color: var(--color-risk-yellow);
+    }
+
+    .event-level--low {
+      background: var(--color-risk-green-bg);
+      color: var(--color-risk-green);
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1100px) {
+      .risk-panel { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .chat-body { padding: 16px; }
+      .chat-input-area { padding: 12px 16px; }
+      .msg-user .msg-bubble,
+      .msg-ai .msg-bubble { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- ===== Left Sidebar ===== -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          </div>
+          <div class="sidebar-logo-text">
+            <span class="logo-title">守心智护</span>
+            <span class="logo-subtitle">照护者端</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">功能导航</div>
+        <a href="index.html" class="sidebar-link active">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+          对话问答
+        </a>
+        <a href="records.html" class="sidebar-link">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+          照护记录
+        </a>
+        <a href="profile.html" class="sidebar-link">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+          风险档案
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="nav-label" style="padding: 0 0 8px;">照护者信息</div>
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">张</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">张秀兰</div>
+            <div class="sidebar-user-role">62岁 / 配偶</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== Main Chat Area ===== -->
+    <main class="main-content">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <h1 class="chat-title">智能对话</h1>
+          <span class="risk-badge-inline">压力上升</span>
+        </div>
+        <div class="chat-header-right">
+          照护对象：<strong>李建国</strong> | 阿尔茨海默病中期
+        </div>
+      </div>
+
+      <!-- Chat Messages -->
+      <div class="chat-body" id="chatBody">
+
+        <!-- Date divider -->
+        <div class="chat-date-divider"><span>05月23日</span></div>
+
+        <!-- Conversation 1 -->
+        <div class="chat-pair">
+          <div class="msg-user">
+            <div>
+              <div class="msg-bubble">我真的快撑不住了，每天24小时都要看着他，我自己连觉都睡不好，感觉活着没什么意思</div>
+              <div class="msg-meta">16:45</div>
+            </div>
+          </div>
+          <div class="msg-ai">
+            <div class="msg-ai-avatar">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+            <div class="msg-ai-content">
+              <div class="msg-bubble">
+                张阿姨，您辛苦了。能感受到您现在承受着很大的压力，长期照护确实非常不容易，有这样的感受是正常的，您不需要一个人扛着。<br><br>
+                我想先关心您几个问题：您每天大概能睡几个小时？家里有没有其他人可以帮忙分担一些？哪怕是半天的时间让您好好休息一下也很重要。<br><br>
+                如果暂时找不到家人帮忙，我建议您可以联系社区的临时照护服务，或者拨打<strong>12320卫生热线</strong>咨询喘息服务。您的健康同样重要，照顾好自己才能更好地照顾建国叔。<br><br>
+                如果您感到情绪特别低落，也可以拨打<strong>心理援助热线：400-161-9995</strong>，有专业的心理咨询师可以陪您聊聊。
+              </div>
+              <div class="msg-meta">
+                16:46
+                <span class="msg-risk-tag msg-risk-tag--orange">风险预警 - 情绪崩溃</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date divider -->
+        <div class="chat-date-divider"><span>05月24日</span></div>
+
+        <!-- Conversation 2 -->
+        <div class="chat-pair">
+          <div class="msg-user">
+            <div>
+              <div class="msg-bubble">他又起来在客厅走来走去，开了好多灯，我被吵醒了</div>
+              <div class="msg-meta">02:30</div>
+            </div>
+          </div>
+          <div class="msg-ai">
+            <div class="msg-ai-avatar">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+            <div class="msg-ai-content">
+              <div class="msg-bubble">
+                这是阿尔茨海默病患者常见的日落综合征和夜间游走行为，您先别着急。<br><br>
+                <strong>安全检查：</strong><br>
+                - 请确认家中的门窗是否已经加装了安全锁<br>
+                - 厨房和卫生间是否有防滑措施<br>
+                - 走廊上是否有尖锐物品需要移开<br><br>
+                <strong>应对建议：</strong><br>
+                - 可以在走廊和客厅安装小夜灯，避免全部大灯被打开<br>
+                - 他游走时不要强行制止，温和地引导他回到床上<br>
+                - 白天帮他增加一些活动量，有助于改善夜间睡眠<br><br>
+                如果夜间游走变得频繁，建议下次复诊时和医生讨论，可能需要调整用药方案。
+              </div>
+              <div class="msg-meta">
+                02:31
+                <span class="msg-risk-tag msg-risk-tag--yellow">风险标记 - 夜间游走</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conversation 3 -->
+        <div class="chat-pair">
+          <div class="msg-user">
+            <div>
+              <div class="msg-bubble">今天早上他又不肯吃药了，把药片扔到地上，我怎么说他都不听</div>
+              <div class="msg-meta">08:15</div>
+            </div>
+          </div>
+          <div class="msg-ai">
+            <div class="msg-ai-avatar">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+            <div class="msg-ai-content">
+              <div class="msg-bubble">
+                拒药是很常见的情况，您不要太自责。我先了解几个问题：<br><br>
+                - 他今天早上的情绪怎么样？有没有特别烦躁或者不安？<br>
+                - 拒绝的是哪种药？是所有的药都不肯吃，还是某一种？<br>
+                - 最近有没有换过药物或者调整过剂量？<br><br>
+                <strong>您可以试试这些方法：</strong><br>
+                - 把药片碾碎，拌在他喜欢的粥或酸奶里<br>
+                - 选择他心情比较平静的时候再试<br>
+                - 不要在吃药这件事上和他争执，可以先转移注意力再尝试<br><br>
+                如果持续拒药，建议联系他的主治医生，看看是否可以调整药物剂型，比如换成口服液或贴片。
+              </div>
+              <div class="msg-meta">
+                08:16
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Chat Input -->
+      <div class="chat-input-area">
+        <div class="chat-input-wrap">
+          <input type="text" class="chat-input" placeholder="描述您遇到的照护问题..." id="chatInput">
+          <div class="input-actions">
+            <button class="input-icon-btn" title="语音输入">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            </button>
+            <button class="input-icon-btn" title="发送图片">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+            </button>
+            <button class="input-icon-btn send-btn" title="发送" id="sendBtn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ===== Right Sidebar: Risk Panel ===== -->
+    <aside class="risk-panel">
+      <div class="risk-panel-header">
+        <div class="risk-panel-title">风险档案</div>
+        <div class="risk-score-row">
+          <div class="risk-score-circle">
+            <span class="risk-score-num">62</span>
+          </div>
+          <div class="risk-score-info">
+            <div class="risk-level-label">
+              <span class="risk-badge-inline" style="font-size:0.6875rem;">压力上升</span>
+            </div>
+            <div class="risk-level-desc">综合风险评分，建议关注照护者状态</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7-day trend -->
+      <div class="risk-section">
+        <div class="risk-section-title">7日风险趋势</div>
+        <div class="trend-chart">
+          <div class="trend-bar-wrap">
+            <div class="trend-score-label">45</div>
+            <div class="trend-bar trend-bar--medium" style="height:36px;"></div>
+            <div class="trend-label">05-18</div>
+          </div>
+          <div class="trend-bar-wrap">
+            <div class="trend-score-label">42</div>
+            <div class="trend-bar trend-bar--medium" style="height:33px;"></div>
+            <div class="trend-label">05-19</div>
+          </div>
+          <div class="trend-bar-wrap">
+            <div class="trend-score-label">50</div>
+            <div class="trend-bar trend-bar--medium" style="height:42px;"></div>
+            <div class="trend-label">05-20</div>
+          </div>
+          <div class="trend-bar-wrap">
+            <div class="trend-score-label">48</div>
+            <div class="trend-bar trend-bar--medium" style="height:40px;"></div>
+            <div class="trend-label">05-21</div>
+          </div>
+          <div class="trend-bar-wrap">
+            <div class="trend-score-label">55</div>
+            <div class="trend-bar trend-bar--medium" style="height:48px;"></div>
+            <div class="trend-label">05-22</div>
+          </div>
+          <div class="trend-bar-wrap">
+            <div class="trend-score-label">58</div>
+            <div class="trend-bar trend-bar--high" style="height:52px;"></div>
+            <div class="trend-label">05-23</div>
+          </div>
+          <div class="trend-bar-wrap">
+            <div class="trend-score-label">62</div>
+            <div class="trend-bar trend-bar--high" style="height:58px;"></div>
+            <div class="trend-label">05-24</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent events -->
+      <div class="risk-section">
+        <div class="risk-section-title">近期照护事件</div>
+        <div class="events-list">
+          <div class="event-item">
+            <div class="event-dot event-dot--medium"></div>
+            <div class="event-info">
+              <div class="event-name">拒药</div>
+              <div class="event-time">05-24 08:15</div>
+            </div>
+            <span class="event-level event-level--medium">中等</span>
+          </div>
+          <div class="event-item">
+            <div class="event-dot event-dot--medium"></div>
+            <div class="event-info">
+              <div class="event-name">夜间游走</div>
+              <div class="event-time">05-24 02:30</div>
+            </div>
+            <span class="event-level event-level--medium">中等</span>
+          </div>
+          <div class="event-item">
+            <div class="event-dot event-dot--high"></div>
+            <div class="event-info">
+              <div class="event-name">情绪崩溃</div>
+              <div class="event-time">05-23 16:45</div>
+            </div>
+            <span class="event-level event-level--high">高危</span>
+          </div>
+          <div class="event-item">
+            <div class="event-dot event-dot--low"></div>
+            <div class="event-info">
+              <div class="event-name">拒食</div>
+              <div class="event-time">05-23 12:00</div>
+            </div>
+            <span class="event-level event-level--low">低</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script>
+    // Simple send-message interaction for demo
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const chatBody = document.getElementById('chatBody');
+
+    function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      // Create user message
+      const pair = document.createElement('div');
+      pair.className = 'chat-pair';
+
+      const now = new Date();
+      const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+      pair.innerHTML = `
+        <div class="msg-user">
+          <div>
+            <div class="msg-bubble">${escapeHtml(text)}</div>
+            <div class="msg-meta">${timeStr}</div>
+          </div>
+        </div>
+      `;
+
+      chatBody.appendChild(pair);
+      chatInput.value = '';
+      chatBody.scrollTop = chatBody.scrollHeight;
+
+      // Simulate AI typing delay
+      setTimeout(() => {
+        const aiPair = document.createElement('div');
+        aiPair.className = 'chat-pair';
+        aiPair.innerHTML = `
+          <div class="msg-ai">
+            <div class="msg-ai-avatar">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+            <div class="msg-ai-content">
+              <div class="msg-bubble">感谢您的分享。我正在分析您描述的情况，请稍等...作为演示系统，这里展示了AI助手的实时响应能力。在正式版本中，系统会根据您描述的具体问题提供个性化的专业建议。</div>
+              <div class="msg-meta">${timeStr}</div>
+            </div>
+          </div>
+        `;
+        chatBody.appendChild(aiPair);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }, 800);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Scroll to bottom on load
+    chatBody.scrollTop = chatBody.scrollHeight;
+  </script>
+</body>
+</html>

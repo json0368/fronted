@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守心智护 - 机构端</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/common.css">
+<style>
+  :root {
+    --color-primary: #2196F3;
+    --color-primary-light: #64B5F6;
+    --color-primary-dark: #1976D2;
+    --color-primary-bg: #E3F2FD;
+  }
+
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: #FAFAF8;
+    color: #333;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ===== Main Content ===== */
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    padding: 32px 36px;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .page-header {
+    margin-bottom: 28px;
+  }
+
+  .page-header .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+
+  .page-header .header-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 4px;
+  }
+
+  .page-header .meta-item {
+    font-size: 13px;
+    color: #888;
+  }
+
+  .page-header .meta-item span {
+    color: #555;
+    font-weight: 500;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: #2196F3;
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: #1976D2;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.3);
+  }
+
+  .btn-outline {
+    background: #fff;
+    color: #666;
+    border: 1px solid #ddd;
+  }
+
+  .btn-outline:hover {
+    border-color: #2196F3;
+    color: #2196F3;
+  }
+
+  /* Summary Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    border: 1px solid #F0F0EC;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .stat-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .stat-card .stat-label {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 10px;
+  }
+
+  .stat-card .stat-value {
+    font-size: 30px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .stat-card .stat-value.red {
+    color: #F44336;
+  }
+
+  .stat-card .stat-sub {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 6px;
+  }
+
+  /* Section Card */
+  .section-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px 28px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    border: 1px solid #F0F0EC;
+    margin-bottom: 24px;
+  }
+
+  .section-card .section-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #F5F5F3;
+  }
+
+  /* Risk Distribution */
+  .risk-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .risk-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .risk-bar-label {
+    width: 140px;
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .risk-bar-track {
+    flex: 1;
+    height: 28px;
+    background: #F5F5F3;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .risk-bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 1s ease;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    font-size: 12px;
+    color: #fff;
+    font-weight: 500;
+    min-width: 50px;
+  }
+
+  .risk-bar-fill.green { background: #4CAF50; }
+  .risk-bar-fill.yellow { background: #FF9800; }
+  .risk-bar-fill.orange { background: #FF5722; }
+  .risk-bar-fill.red { background: #F44336; }
+
+  .risk-bar-count {
+    width: 80px;
+    text-align: right;
+    font-size: 13px;
+    color: #888;
+    flex-shrink: 0;
+  }
+
+  .risk-bar-count strong {
+    color: #333;
+    font-weight: 600;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table thead th {
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #888;
+    border-bottom: 1px solid #F0F0EC;
+    white-space: nowrap;
+  }
+
+  .data-table tbody tr {
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .data-table tbody tr:hover {
+    background: #FAFAF8;
+  }
+
+  .data-table tbody tr.selected {
+    background: #E3F2FD;
+  }
+
+  .data-table tbody td {
+    padding: 14px 14px;
+    font-size: 13px;
+    color: #444;
+    border-bottom: 1px solid #F8F8F6;
+    vertical-align: middle;
+  }
+
+  .data-table .name-cell {
+    font-weight: 500;
+    color: #1a1a1a;
+  }
+
+  /* Risk Badge */
+  .risk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .risk-badge .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .risk-badge.green {
+    background: #E8F5E9;
+    color: #2E7D32;
+  }
+  .risk-badge.green .dot { background: #4CAF50; }
+
+  .risk-badge.yellow {
+    background: #FFF3E0;
+    color: #E65100;
+  }
+  .risk-badge.yellow .dot { background: #FF9800; }
+
+  .risk-badge.orange {
+    background: #FBE9E7;
+    color: #BF360C;
+  }
+  .risk-badge.orange .dot { background: #FF5722; }
+
+  .risk-badge.red {
+    background: #FFEBEE;
+    color: #C62828;
+  }
+  .risk-badge.red .dot { background: #F44336; }
+
+  .score-cell {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .score-cell.high { color: #F44336; }
+  .score-cell.mid { color: #FF5722; }
+  .score-cell.low { color: #FF9800; }
+  .score-cell.safe { color: #4CAF50; }
+
+  .btn-view {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid #E0E0E0;
+    background: #fff;
+    color: #2196F3;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    transition: all 0.15s ease;
+  }
+
+  .btn-view:hover {
+    background: #E3F2FD;
+    border-color: #2196F3;
+  }
+
+  /* Alert Cards */
+  .alert-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .alert-card {
+    background: #fff;
+    border: 1px solid #F0F0EC;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 20px;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .alert-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .alert-card.level-red {
+    border-left: 4px solid #F44336;
+  }
+
+  .alert-card.level-orange {
+    border-left: 4px solid #FF5722;
+  }
+
+  .alert-indicator {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .alert-indicator.red {
+    background: #FFEBEE;
+  }
+
+  .alert-indicator.orange {
+    background: #FBE9E7;
+  }
+
+  .alert-indicator svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .alert-indicator.red svg { stroke: #F44336; }
+  .alert-indicator.orange svg { stroke: #FF5722; }
+
+  .alert-body {
+    flex: 1;
+  }
+
+  .alert-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .alert-header .alert-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  .alert-status {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .alert-status.pending {
+    background: #FFEBEE;
+    color: #C62828;
+  }
+
+  .alert-status.following {
+    background: #FFF3E0;
+    color: #E65100;
+  }
+
+  .alert-type {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .alert-type strong {
+    color: #444;
+  }
+
+  .alert-time {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
+  }
+
+  .alert-evidence {
+    background: #FAFAF8;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  .alert-evidence .evi-label {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .alert-evidence ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .alert-evidence li {
+    font-size: 12px;
+    color: #555;
+    padding: 2px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .alert-evidence li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+
+  .alert-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-action {
+    padding: 7px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .btn-action.primary {
+    background: #2196F3;
+    color: #fff;
+  }
+
+  .btn-action.primary:hover {
+    background: #1976D2;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.3);
+  }
+
+  .btn-action.secondary {
+    background: #F5F5F5;
+    color: #555;
+  }
+
+  .btn-action.secondary:hover {
+    background: #EEEEEE;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  .modal-box {
+    background: #fff;
+    border-radius: 16px;
+    width: 480px;
+    max-width: 90vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    overflow: hidden;
+    animation: modalIn 0.25s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #F0F0EC;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-header h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: #F5F5F5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+
+  .modal-close:hover {
+    background: #EEEEEE;
+  }
+
+  .modal-close svg {
+    width: 16px;
+    height: 16px;
+    stroke: #888;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .modal-body {
+    padding: 24px;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .detail-item .dl {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 4px;
+  }
+
+  .detail-item .dv {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+  }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #F0F0EC;
+    text-align: right;
+  }
+
+  .modal-footer .btn {
+    min-width: 80px;
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+    .main {
+      margin-left: 0;
+      padding: 20px 16px;
+    }
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar sidebar--fixed">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      </div>
+      <div class="sidebar-logo-text">
+        <span class="logo-title">守心智护</span>
+        <span class="logo-subtitle">机构管理端</span>
+      </div>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">管理功能</div>
+    <a href="index.html" class="sidebar-link active" data-page="risk-overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      风险总览
+    </a>
+    <a href="alerts.html" class="sidebar-link" data-page="alert-handling">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      预警处理
+    </a>
+    <a href="caregivers.html" class="sidebar-link" data-page="caregiver-mgmt">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      护工管理
+    </a>
+    <a href="training.html" class="sidebar-link" data-page="training">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      培训管理
+    </a>
+    <a href="reports.html" class="sidebar-link" data-page="reports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      数据报表
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="nav-label" style="padding: 0 0 8px;">管理员信息</div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">王</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">王主任</div>
+        <div class="sidebar-user-role">阳光养老院</div>
+      </div>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-top">
+      <div>
+        <h1>护工风险总览看板</h1>
+        <div class="header-meta">
+          <div class="meta-item">机构名称：<span>阳光养老院</span></div>
+          <div class="meta-item">统计日期：<span>2026年5月24日</span></div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="alert('数据导出中...')">导出报表</button>
+        <button class="btn btn-primary" onclick="alert('正在刷新数据...')">刷新数据</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">总护工数</div>
+      <div class="stat-value">24<span style="font-size:16px;font-weight:400;color:#888;margin-left:4px">人</span></div>
+      <div class="stat-sub">在岗护工总数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">高风险护工</div>
+      <div class="stat-value red">2<span style="font-size:16px;font-weight:400;margin-left:4px">人</span></div>
+      <div class="stat-sub">需重点关注</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">本周新增预警</div>
+      <div class="stat-value">5<span style="font-size:16px;font-weight:400;color:#888;margin-left:4px">件</span></div>
+      <div class="stat-sub">较上周 +2 件</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">已处理预警</div>
+      <div class="stat-value">3<span style="font-size:16px;font-weight:400;color:#888;margin-left:4px">件</span></div>
+      <div class="stat-sub">处理率 60%</div>
+    </div>
+  </div>
+
+  <!-- Risk Distribution -->
+  <div class="section-card">
+    <div class="section-title">风险等级分布</div>
+    <div class="risk-bars">
+      <div class="risk-bar-row">
+        <div class="risk-bar-label">绿色（常态）</div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill green" style="width:58%">14人</div>
+        </div>
+        <div class="risk-bar-count"><strong>14</strong> 人（58%）</div>
+      </div>
+      <div class="risk-bar-row">
+        <div class="risk-bar-label">黄色（压力上升）</div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill yellow" style="width:25%">6人</div>
+        </div>
+        <div class="risk-bar-count"><strong>6</strong> 人（25%）</div>
+      </div>
+      <div class="risk-bar-row">
+        <div class="risk-bar-label">橙色（临界高压）</div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill orange" style="width:8%">2人</div>
+        </div>
+        <div class="risk-bar-count"><strong>2</strong> 人（8%）</div>
+      </div>
+      <div class="risk-bar-row">
+        <div class="risk-bar-label">红色（急性高危）</div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill red" style="width:8%">2人</div>
+        </div>
+        <div class="risk-bar-count"><strong>2</strong> 人（8%）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Caregiver Table -->
+  <div class="section-card">
+    <div class="section-title">护工风险列表</div>
+    <div class="table-wrap">
+      <table class="data-table" id="caregiverTable">
+        <thead>
+          <tr>
+            <th>护工姓名</th>
+            <th>所属区域</th>
+            <th>负责老人数</th>
+            <th>班次</th>
+            <th>风险等级</th>
+            <th>风险分数</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Active Alerts -->
+  <div class="section-card">
+    <div class="section-title">待处理预警</div>
+    <div class="alert-cards" id="alertCards"></div>
+  </div>
+</main>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modalTitle">护工详情</h3>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mock data
+  const caregivers = [
+    { name: '张秀兰', area: 'A区', elders: 3, shift: '白班', riskLevel: '黄色', score: 62 },
+    { name: '刘桂花', area: 'B区', elders: 4, shift: '白班', riskLevel: '橙色', score: 78 },
+    { name: '王淑芬', area: 'A区', elders: 2, shift: '夜班', riskLevel: '绿色', score: 35 },
+    { name: '陈美玲', area: 'C区', elders: 5, shift: '白班', riskLevel: '红色', score: 89 },
+    { name: '赵玉华', area: 'B区', elders: 3, shift: '夜班', riskLevel: '绿色', score: 28 },
+    { name: '孙丽萍', area: 'A区', elders: 4, shift: '白班', riskLevel: '黄色', score: 55 }
+  ];
+
+  const riskColorMap = {
+    '绿色': 'green',
+    '黄色': 'yellow',
+    '橙色': 'orange',
+    '红色': 'red'
+  };
+
+  const riskLabelMap = {
+    '绿色': '常态',
+    '黄色': '压力上升',
+    '橙色': '临界高压',
+    '红色': '急性高危'
+  };
+
+  function getScoreClass(score) {
+    if (score >= 80) return 'high';
+    if (score >= 60) return 'mid';
+    if (score >= 40) return 'low';
+    return 'safe';
+  }
+
+  // Render table
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = caregivers.map((c, i) => {
+      const color = riskColorMap[c.riskLevel];
+      return `
+        <tr data-index="${i}" onclick="selectRow(this, ${i})">
+          <td class="name-cell">${c.name}</td>
+          <td>${c.area}</td>
+          <td>${c.elders}人</td>
+          <td>${c.shift}</td>
+          <td>
+            <span class="risk-badge ${color}">
+              <span class="dot"></span>
+              ${c.riskLevel}
+            </span>
+          </td>
+          <td class="score-cell ${getScoreClass(c.score)}">${c.score}分</td>
+          <td>
+            <button class="btn-view" onclick="event.stopPropagation(); showDetail(${i})">查看</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function selectRow(row, index) {
+    document.querySelectorAll('#tableBody tr').forEach(tr => tr.classList.remove('selected'));
+    row.classList.add('selected');
+    showDetail(index);
+  }
+
+  function showDetail(index) {
+    const c = caregivers[index];
+    const color = riskColorMap[c.riskLevel];
+    document.getElementById('modalTitle').textContent = c.name + ' - 护工详情';
+    document.getElementById('modalBody').innerHTML = `
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="dl">姓名</div>
+          <div class="dv">${c.name}</div>
+        </div>
+        <div class="detail-item">
+          <div class="dl">所属区域</div>
+          <div class="dv">${c.area}</div>
+        </div>
+        <div class="detail-item">
+          <div class="dl">负责老人数</div>
+          <div class="dv">${c.elders}人</div>
+        </div>
+        <div class="detail-item">
+          <div class="dl">班次</div>
+          <div class="dv">${c.shift}</div>
+        </div>
+        <div class="detail-item">
+          <div class="dl">风险等级</div>
+          <div class="dv"><span class="risk-badge ${color}"><span class="dot"></span>${c.riskLevel}（${riskLabelMap[c.riskLevel]}）</span></div>
+        </div>
+        <div class="detail-item">
+          <div class="dl">风险分数</div>
+          <div class="dv score-cell ${getScoreClass(c.score)}">${c.score}分</div>
+        </div>
+      </div>
+    `;
+    document.getElementById('detailModal').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('detailModal').classList.remove('show');
+  }
+
+  document.getElementById('detailModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Render alert cards
+  function renderAlerts() {
+    const alerts = [
+      {
+        level: 'red',
+        name: '陈美玲',
+        type: '严重疲惫伴崩溃信号',
+        time: '2026-05-24 09:15',
+        status: '待处理',
+        statusClass: 'pending',
+        evidence: [
+          '连续3天夜间求助',
+          '语音情绪检测到崩溃特征',
+          '交互频率骤增'
+        ],
+        buttons: [
+          { label: '确认处理', cls: 'primary', action: "alert('已确认处理，正在分配跟进人员...')" },
+          { label: '转介跟进', cls: 'secondary', action: "alert('已转介至心理辅导组...')" }
+        ]
+      },
+      {
+        level: 'orange',
+        name: '刘桂花',
+        type: '持续高压状态',
+        time: '2026-05-24 08:30',
+        status: '跟进中',
+        statusClass: 'following',
+        evidence: [
+          '7天风险分数持续上升',
+          '照护攻击行为患者频率增加'
+        ],
+        buttons: [
+          { label: '确认处理', cls: 'primary', action: "alert('已确认处理...')" },
+          { label: '查看详情', cls: 'secondary', action: "alert('正在加载详细数据...')" }
+        ]
+      }
+    ];
+
+    const container = document.getElementById('alertCards');
+    container.innerHTML = alerts.map(a => `
+      <div class="alert-card level-${a.level}">
+        <div class="alert-indicator ${a.level}">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div class="alert-body">
+          <div class="alert-header">
+            <span class="alert-name">${a.name}</span>
+            <span class="alert-status ${a.statusClass}">${a.status}</span>
+          </div>
+          <div class="alert-type">类型：<strong>${a.type}</strong></div>
+          <div class="alert-time">${a.time}</div>
+          <div class="alert-evidence">
+            <div class="evi-label">风险证据</div>
+            <ul>
+              ${a.evidence.map(e => `<li>${e}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="alert-actions">
+            ${a.buttons.map(b => `<button class="btn-action ${b.cls}" onclick="${b.action}">${b.label}</button>`).join('')}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Sidebar nav click
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Init
+  renderTable();
+  renderAlerts();
+</script>
+
+</body>
+</html>
