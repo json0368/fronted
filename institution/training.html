@@ -46,6 +46,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
+    width: 100%;
   }
 
   .page-header h1 {
@@ -374,7 +375,7 @@
       <div class="sidebar-avatar">王</div>
       <div class="sidebar-user-info">
         <div class="sidebar-user-name">王主任</div>
-        <div class="sidebar-user-role">阳光养老院</div>
+        <div class="sidebar-user-role">佛山市三水区人民医院</div>
       </div>
     </div>
   </div>
@@ -388,7 +389,7 @@
         <h1>培训知识库</h1>
       </div>
       <div class="header-actions">
-        <button class="btn btn-primary" onclick="alert('发布新课程功能')">+ 发布新课程</button>
+        <button class="btn btn-primary" onclick="showToast('正在加载课程发布表单...', 'info')">+ 发布新课程</button>
       </div>
     </div>
   </div>
@@ -428,6 +429,7 @@
   </div>
 </main>
 
+<script src="../js/common.js"></script>
 <script>
   const courses = [
     {
@@ -498,7 +500,7 @@
       const progressClass = getProgressClass(c.completion);
 
       return `
-        <div class="course-card" onclick="alert('查看课程: ${c.title}')">
+        <div class="course-card" onclick="showToast('正在打开课程: ${c.title}...', 'info')">
           <div class="course-header">
             <div class="course-title">${c.title}</div>
             <div class="course-icon ${iconClass}">${icon}</div>

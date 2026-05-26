@@ -46,6 +46,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
+    width: 100%;
   }
 
   .page-header h1 {
@@ -509,7 +510,7 @@
       <div class="sidebar-avatar">王</div>
       <div class="sidebar-user-info">
         <div class="sidebar-user-name">王主任</div>
-        <div class="sidebar-user-role">阳光养老院</div>
+        <div class="sidebar-user-role">佛山市三水区人民医院</div>
       </div>
     </div>
   </div>
@@ -524,7 +525,7 @@
       </div>
       <div class="header-actions">
         <input type="text" class="search-input" placeholder="搜索护工姓名..." id="searchInput">
-        <button class="btn btn-primary" onclick="alert('添加护工功能')">+ 添加护工</button>
+        <button class="btn btn-primary" onclick="showToast('正在为您打开添加护理人员窗口...', 'info')">+ 添加护工</button>
       </div>
     </div>
   </div>
@@ -558,7 +559,7 @@
           <tr>
             <th>姓名</th>
             <th>区域</th>
-            <th>负责老人数</th>
+            <th>负责患者数</th>
             <th>班次</th>
             <th>入职时间</th>
             <th>风险等级</th>
@@ -591,6 +592,7 @@
   </div>
 </div>
 
+<script src="../js/common.js"></script>
 <script>
   const caregivers = [
     { name: '张秀兰', area: 'A区', elders: 3, shift: '白班', joinDate: '2023-05-15', riskLevel: '黄色', score: 62, age: 45, gender: '女', phone: '138****5678', elderList: ['李大爷 (A101)', '王奶奶 (A102)', '赵爷爷 (A105)'], trend: [48, 50, 53, 55, 58, 60, 62] },
@@ -643,7 +645,7 @@
           <td class="score-cell ${getScoreClass(c.score)}">${c.score}分</td>
           <td>
             <button class="btn-view" onclick="event.stopPropagation(); showDetail(${idx})">详情</button>
-            <button class="btn-view" onclick="event.stopPropagation(); alert('排班管理功能')">排班</button>
+            <button class="btn-view" onclick="event.stopPropagation(); showToast('正在进入病区智能排班系统...', 'info')">排班</button>
           </td>
         </tr>
       `;

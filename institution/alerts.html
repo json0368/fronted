@@ -39,6 +39,7 @@
   }
 
   .page-header {
+    display: block;
     margin-bottom: 28px;
   }
 
@@ -46,6 +47,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
+    width: 100%;
   }
 
   .page-header h1 {
@@ -440,7 +442,7 @@
       <div class="sidebar-avatar">王</div>
       <div class="sidebar-user-info">
         <div class="sidebar-user-name">王主任</div>
-        <div class="sidebar-user-role">阳光养老院</div>
+        <div class="sidebar-user-role">佛山市三水区人民医院</div>
       </div>
     </div>
   </div>
@@ -453,7 +455,7 @@
       <div>
         <h1>高风险预警处理</h1>
         <div class="header-meta">
-          <div class="meta-item">机构名称：<span>阳光养老院</span></div>
+          <div class="meta-item">机构名称：<span>佛山市三水区人民医院</span></div>
           <div class="meta-item">统计日期：<span>2026年5月24日</span></div>
         </div>
       </div>
@@ -469,6 +471,7 @@
   <div class="alert-cards" id="alertCards"></div>
 </main>
 
+<script src="../js/common.js"></script>
 <script>
   const alerts = [
     {
@@ -484,11 +487,11 @@
         '语音情绪检测到崩溃特征',
         '交互频率骤增'
       ],
-      suggestion: '建议暂时调离C区重症老人，安排轮休',
+      suggestion: '建议暂时调离C区重症患者，安排轮休',
       buttons: [
-        { label: '确认处理', cls: 'primary', action: "alert('已确认处理，正在分配跟进人员...')" },
-        { label: '转介心理顾问', cls: 'secondary', action: "alert('已转介至心理顾问...')" },
-        { label: '生成排班建议', cls: 'secondary', action: "alert('正在生成排班建议...')" }
+        { label: '确认处理', cls: 'primary', action: "showToast('已确认处理，正在安排跟进护理主管与心理咨询师...', 'success')" },
+        { label: '转介心理顾问', cls: 'secondary', action: "showToast('已成功转介至院区心理咨询顾问...', 'success')" },
+        { label: '生成排班建议', cls: 'secondary', action: "showToast('正在根据病区压力生成智能化排班建议表...', 'info')" }
       ]
     },
     {
@@ -503,10 +506,10 @@
         '7天风险分数持续上升',
         '照护攻击行为患者频率增加'
       ],
-      suggestion: '建议减少负责老人数量，增加休息时间',
+      suggestion: '建议减少负责患者数量，增加休息时间',
       buttons: [
-        { label: '确认处理', cls: 'primary', action: "alert('已确认处理...')" },
-        { label: '查看详情', cls: 'secondary', action: "alert('正在加载详细数据...')" }
+        { label: '确认处理', cls: 'primary', action: "showToast('已确认处理，压力缓解措施已备案...', 'success')" },
+        { label: '查看详情', cls: 'secondary', action: "showToast('正在调阅患者及护理风险评估详情...', 'info')" }
       ]
     },
     {
